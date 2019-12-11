@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>serialutil.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+serialutil.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">time</span>
+
+<span class="s0">import </span><span class="s1">numpy</span>
+<span class="s0">import </span><span class="s1">serial</span>
+
+
+<span class="s0">class </span><span class="s1">GcodeSender:</span>
+    <span class="s0">def </span><span class="s1">__init__(self</span><span class="s0">, </span><span class="s1">port=</span><span class="s2">&quot;/dev/ttyACM0&quot;</span><span class="s0">, </span><span class="s1">baud=</span><span class="s3">115200</span><span class="s1">):</span>
+        <span class="s1">self.baud = baud</span>
+        <span class="s1">self.port = port</span>
+        <span class="s1">self.serialConnection = serial.Serial(self.port</span><span class="s0">, </span><span class="s1">self.baud</span><span class="s0">, </span><span class="s1">timeout=</span><span class="s3">5</span><span class="s1">)</span>
+
+    <span class="s0">def </span><span class="s1">__del__(self):</span>
+        <span class="s1">self.serialConnection.close()</span>
+
+    <span class="s0">def </span><span class="s1">setup(self):</span>
+        <span class="s1">self.writeGcode(</span><span class="s2">&quot;G21&quot;</span><span class="s1">) </span><span class="s4"># set millimeters mode</span>
+        <span class="s1">self.writeGcode(</span><span class="s2">&quot;G90&quot;</span><span class="s1">) </span><span class="s4"># set absolute mode</span>
+
+    <span class="s0">def </span><span class="s1">initializePosition(self</span><span class="s0">, </span><span class="s1">x=</span><span class="s3">0</span><span class="s0">, </span><span class="s1">y=</span><span class="s3">0</span><span class="s1">):</span>
+        <span class="s1">initcmd = </span><span class="s2">f&quot;G10 P0 L20 X</span><span class="s0">{</span><span class="s1">x</span><span class="s0">:</span><span class="s2">.3f</span><span class="s0">} </span><span class="s2">Y</span><span class="s0">{</span><span class="s1">y</span><span class="s0">:</span><span class="s2">.3f</span><span class="s0">} </span><span class="s2">Z0&quot;</span>
+        <span class="s1">self.writeGcode(initcmd)</span>
+
+    <span class="s0">def </span><span class="s1">sendangle(self</span><span class="s0">,</span><span class="s1">x</span><span class="s0">, </span><span class="s1">y</span><span class="s0">, </span><span class="s1">feed=</span><span class="s3">300</span><span class="s1">):</span>
+        <span class="s1">cmd = </span><span class="s2">f&quot;G1 X</span><span class="s0">{</span><span class="s1">x</span><span class="s0">:</span><span class="s2">.3f</span><span class="s0">} </span><span class="s2">Y</span><span class="s0">{</span><span class="s1">y</span><span class="s0">:</span><span class="s2">.3f</span><span class="s0">} </span><span class="s2">F</span><span class="s0">{</span><span class="s1">feed</span><span class="s0">:</span><span class="s2">.3f</span><span class="s0">}</span><span class="s2">&quot;</span>
+        <span class="s1">self.writeGcode(cmd)</span>
+
+
+    <span class="s0">def </span><span class="s1">writeGcode(self</span><span class="s0">, </span><span class="s1">gcodeLine):</span>
+        <span class="s1">gcodeLine = (gcodeLine + </span><span class="s2">&quot;</span><span class="s0">\n</span><span class="s2">&quot;</span><span class="s1">).encode(</span><span class="s2">&quot;utf-8&quot;</span><span class="s1">)</span>
+        <span class="s1">self.serialConnection.write(gcodeLine)</span>
+        <span class="s1">self.serialConnection.flush()</span>
+
+
+<span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">&quot;__main__&quot;</span><span class="s1">:</span>
+    <span class="s1">sender = GcodeSender()</span>
+    <span class="s1">sender.setup()</span>
+    <span class="s1">sender.initializePosition()</span>
+    <span class="s1">sender.sendangle(</span><span class="s3">0</span><span class="s0">, </span><span class="s3">90</span><span class="s1">)</span>
+    <span class="s1">time.sleep(</span><span class="s3">1</span><span class="s1">)</span>
+</pre>
+</body>
+</html>
