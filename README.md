@@ -1,5 +1,5 @@
 # drawmasoftware
-POE code for drawma queen project
+Inverse Kinematics Code for Drawing Bot
 
 Four bar linkage mechanism with 200 mm arms
 Kinematics solved for x, -x, and y coordinate system 
